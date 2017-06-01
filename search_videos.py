@@ -13,14 +13,14 @@ YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
 
-def youtube_search(key_word):
+def youtube_search(key_word,page_token = None):
     youtube = build(
       YOUTUBE_API_SERVICE_NAME,
       YOUTUBE_API_VERSION,
       developerKey=DEVELOPER_KEY
       )
 
-    search_response = youtube.search().list(
+    search_response = youtube.search(page_token).list(
         q=key_word,
         type="video",
         part="id,snippet",
@@ -39,8 +39,4 @@ def youtube_search(key_word):
     ).execute()
 
     videos = []
-
-  return video_response.get("items", [])
-
-
-
+    return video_response.get("items", [])
