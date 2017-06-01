@@ -31,7 +31,7 @@ def youtube_search(key_word, pages_number):
             q=key_word,
             type="video",
             part="id,snippet",
-            maxResults=10,
+            maxResults=1,
             pageToken=page_token
         ).execute()
 

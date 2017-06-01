@@ -56,12 +56,12 @@ def create_channels_list(videos_array):
             id=channel_id
         ).execute()
         channels_array.extend(result.get("items", []))
-    #pprint.pprint(channels_array)
+    qpprint.pprint(channels_array)
     pprint.pprint(len(channels_array))
     return channels_array
 
 
-PAGES_NUMBER = 3
+PAGES_NUMBER = 1
 word_list = parser.search_dictionary_parser('5000lemma.txt')
 pprint.pprint('--------')
 # for word in word_list:
