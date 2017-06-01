@@ -1,6 +1,6 @@
 import re
 import sys
-
+import pprint
 
 import apiclient
 from apiclient.discovery import build
@@ -13,30 +13,47 @@ YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
 
-def youtube_search(key_word,page_token = None):
-    youtube = build(
-      YOUTUBE_API_SERVICE_NAME,
-      YOUTUBE_API_VERSION,
-      developerKey=DEVELOPER_KEY
-      )
+def youtube_search(key_word, pages_number):
+    page_token = None
 
-    search_response = youtube.search(page_token).list(
-        q=key_word,
-        type="video",
-        part="id,snippet",
-        maxResults=10
-    ).execute()
-    print(search_response)
+    youtube = build(
+        YOUTUBE_API_SERVICE_NAME,
+        YOUTUBE_API_VERSION,
+        developerKey=DEVELOPER_KEY
+    )
+
     search_videos = []
 
-    for search_result in search_response.get("items", []):
-        search_videos.append(search_result["id"]["videoId"])
-    video_ids = ",".join(search_videos)
+    for number in range(pages_number):
 
-    video_response = youtube.videos().list(
-      id=video_ids,
-      part='snippet,recordingDetails'
-    ).execute()
+        pprint.pprint(page_token)
+        search_response = youtube.search().list(
+            q=key_word,
+            type="video",
+            part="id,snippet",
+            maxResults=50,
+            pageToken=page_token
+        ).execute()
 
-    videos = []
-    return video_response.get("items", [])
+        page_token = search_response.get("nextPageToken", None)
+        if page_token == None:
+            break
+
+        for search_result in search_response.get("items", []):
+            search_videos.append(search_result["id"]["videoId"])
+    videos_info = []
+    for video_id in search_videos:
+
+      # Call the videos.list method to retrieve location details for each
+      # video.
+        video_response = youtube.videos().list(
+            id=video_id,
+            part='snippet, recordingDetails'
+        ).execute()
+        pprint.pprint(video_id)
+
+        videos_info.append(video_response.get("items", []))
+
+    #pprint.pprint(videos_info)
+    pprint.pprint(len(videos_info))
+    return videos_info

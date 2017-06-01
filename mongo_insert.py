@@ -1,4 +1,4 @@
-import parser
+from parser import search_dictionary_parser
 from search_videos import youtube_search
 import pymongo
 from pymongo import MongoClient
@@ -6,8 +6,7 @@ from pymongo import MongoClient
 
 client = MongoClient('localhost', 27017)
 db = client.youtube
-film_dictionary = youtube_search(
-    parser.search_dictionary_parser('5000lemma.txt'))
+film_dictionary = youtube_search(search_dictionary_parser('5000lemma.txt'))
 
 
 def insert_films_to_mongo(film_list):
