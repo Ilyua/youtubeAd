@@ -52,8 +52,11 @@ def youtube_search(key_word, pages_number):
         ).execute()
         pprint.pprint(video_id)
 
-        videos_info.append(video_response.get("items", []))
+        videos_info.extend(video_response.get("items", []))
 
-    #pprint.pprint(videos_info)
+    pprint.pprint(videos_info)
+    pprint.pprint('---------------------------')
+    pprint.pprint(videos_info[0])
+    pprint.pprint('---------------------------')
     pprint.pprint(len(videos_info))
     return videos_info
