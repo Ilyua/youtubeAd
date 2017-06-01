@@ -26,12 +26,12 @@ def youtube_search(key_word, pages_number):
 
     for number in range(pages_number):
 
-        pprint.pprint(page_token)
+
         search_response = youtube.search().list(
             q=key_word,
             type="video",
             part="id,snippet",
-            maxResults=50,
+            maxResults=10,
             pageToken=page_token
         ).execute()
 
@@ -54,9 +54,5 @@ def youtube_search(key_word, pages_number):
 
         videos_info.extend(video_response.get("items", []))
 
-    pprint.pprint(videos_info)
-    pprint.pprint('---------------------------')
-    pprint.pprint(videos_info[0])
-    pprint.pprint('---------------------------')
-    pprint.pprint(len(videos_info))
+
     return videos_info
