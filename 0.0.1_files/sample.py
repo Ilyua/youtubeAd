@@ -26,7 +26,7 @@ API_VERSION = "v3"
 
 # This variable defines a message to display if the CLIENT_SECRETS_FILE is
 # missing.
-MISSING_CLIENT_SECRETS_MESSAGE = "WARNING: Please configure OAuth 2.0" 
+MISSING_CLIENT_SECRETS_MESSAGE = "WARNING: Please configure OAuth 2.0"
 
 # Authorize the request and store authorization credentials.
 def get_authenticated_service(args):
@@ -113,7 +113,7 @@ def search_list_by_location(service, **kwargs):
 def search_dictionary_parser(words_file_name):
     with open(words_file_name) as my_file:
         file_string = my_file.read()
-    return re.findall(r'[а-я]+', file_string)    
+    return re.findall(r'[а-я]+', file_string)
 
 
 print(search_dictionary_parser('5000lemma.txt'))
