@@ -22,7 +22,12 @@ class Downloader:
         self.channels_array = []
         self.channels__of_comments_array = []
 
-    def search_by_all_key():
+    def search_dictionary_parser(words_file_name):
+            with open(words_file_name) as my_file:
+                file_string = my_file.read()
+            return re.findall(r'[а-я]+', file_string)
+
+    def search_by_all_key(self):
         words_list = search_dictionary_parser('5000lemma.txt')
         word = words_list[0]
         youtube_search(word)
@@ -95,10 +100,7 @@ class Downloader:
         videos_info.extend(video_response.get("items", []))
         return videos_info
 
-    def search_dictionary_parser(words_file_name):
-        with open(words_file_name) as my_file:
-            file_string = my_file.read()
-        return re.findall(r'[а-я]+', file_string)
+
 
     def uniquer(seq, f=None):
         """ Keeps earliest occurring item of each f-defined equivalence class """
