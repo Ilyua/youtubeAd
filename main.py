@@ -1,6 +1,13 @@
 from pprint import pprint
 from youtube_apiclient import ApiClient
 from key_phrase_parser import parse_feq_dictionary
+from pymongo import MongoClient
+client = MongoClient()
+db = client.my_db
+channels_coll = db.channels
+videos_coll = db.videos
+comments_coll = db.comments
+
 
 phrases_list = parse_feq_dictionary('5000lemma.txt')
 
@@ -10,17 +17,19 @@ channel_ids = set()
 for i, phrase in enumerate(phrases_list):
     if i >= 1:
         break
-    videos = client.search_videos_by_key_phrase(phrase)
+    videos_ids = client.search_videos_by_key_phrase(phrase)
+    id = list(videos_ids)[0]
+    #for video_id in videos_ids:
+    channel_ids.update({comment['snippet']['topLevelComment']['snippet']['authorChannelId']['value'] for comment in client.get_videos_main_comments(id)})
+
+    videos_coll.insert(client.get_video_info(id))
+    comments_coll.insert(client.get_videos_main_comments(id))
+    #print(list(channel_ids))
+
+    channels_coll.insert(client.get_channel_info(list(channel_ids)[0]))#каналы из комментов
 
 
-    for video_id in videos:
-        channel_ids.update({comment['snippet']['topLevelComment']['snippet']['authorChannelId']['value']
-            for comment in client.get_videos_main_comments(video_id)})
 
-
-for id in channel_ids:
-    pprint(client.get_channel_info(id))
-    break
 
 
 

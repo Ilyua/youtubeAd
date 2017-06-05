@@ -47,7 +47,7 @@ class ApiClient(object):
                 q=phrase,
                 type='video',
                 part='id,snippet',
-                maxResults=50,#max value allowed by youtube api
+                maxResults=2,#max value allowed by youtube api
                 pageToken=page_token
             ).execute()
             page_token = search_response.get('nextPageToken', None)
