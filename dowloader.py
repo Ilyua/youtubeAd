@@ -20,11 +20,20 @@ class Downloader(object):
         self.videos_info = []
         self.channels_array = []
         self.channels_of_comments_array = []
+ 
+    @staticmethod
+    def search_dictionary_parser(words_file_name):
+        REGEX = re.compile('(?P<num>\d+) (?P<freq>[\d\.]+) (?P<phrase>[^ ]+) (?P<type>[a-zA-Z]+)')
 
-    def search_dictionary_parser(self, words_file_name):
-        with open(words_file_name) as my_file:
-            file_string = my_file.read()
-        return re.findall(r'[а-я]+', file_string)
+        with open(words_file_name, 'r') as my_file:
+            for nline, line in enumerate(my_file.readlines()):
+                match = REGEX.match(line) 
+
+                if match is None: 
+                    raise Exception('Problem with format in file {} (line {})'.format(words_file_name, nline))  
+                
+                yield match.group('phrase') 
+
 
     def search_by_all_key(self):
         words_list = self.search_dictionary_parser('5000lemma.txt')
