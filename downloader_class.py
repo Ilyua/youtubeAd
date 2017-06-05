@@ -8,7 +8,6 @@ from oauth2client.tools import argparser
 
 
 class Downloader(object):
-
     YOUTUBE_API_SERVICE_NAME = "youtube"
     YOUTUBE_API_VERSION = "v3"
     DEVELOPER_KEY = 'AIzaSyAOIfpRS2SDQftT3uiXn9s3UyffshfFd3Q'
@@ -22,19 +21,22 @@ class Downloader(object):
         self.channels_array = []
         self.channels_of_comments_array = []
 
-    def search_dictionary_parser(self,words_file_name):
-            with open(words_file_name) as my_file:
-                file_string = my_file.read()
-            return re.findall(r'[а-я]+', file_string)
+    def search_dictionary_parser(self, words_file_name):
+        with open(words_file_name) as my_file:
+            file_string = my_file.read()
+        return re.findall(r'[а-я]+', file_string)
 
     def search_by_all_key(self):
         words_list = self.search_dictionary_parser('5000lemma.txt')
-        word = words_list[0]
-        #pprint(word)
+        for word in words_list:
+            self.youtube_search(word)
+
+    def search_by_all_key_for_one_word(self, number):
+        words_list = self.search_dictionary_parser('5000lemma.txt')
+        word = words_list[number]
         self.youtube_search(word)
 
-
-    def create_channels_list(self,videos_array):
+    def create_channels_list(self, videos_array):
         channels_ids = []
         for video in videos_array:
             channels_ids.append(video['snippet']['channelId'])
@@ -47,13 +49,12 @@ class Downloader(object):
             self.channels_array.extend(result.get("items", []))
         return self.channels_array
 
-    def create_channels_of_comments_list(videos_array):
+    def create_channels_of_comments_list(self, videos_array):
         channels_ids = []
         video_comment_threads = []
         for video in videos_array:
             video_id = video['id']
-            pprint.pprint(video_id)
-            results = youtube.commentThreads().list(
+            results = self.youtube.commentThreads().list(
                 part="snippet",
                 videoId=video_id,
                 textFormat="plainText"
@@ -66,17 +67,18 @@ class Downloader(object):
                                     ['snippet']
                                     ['authorChannelId']
                                     ['value'])
-        channels_ids = uniquer(channels_ids)
+        channels_ids = self.uniquer(channels_ids)
         for channel_id in channels_ids:
-            result = youtube.channels().list(
+            result = self.youtube.channels().list(
                 part="snippet,contentOwnerDetails,statistics,localizations,status",
                 id=channel_id
             ).execute()
-            self.channels__of_comments_array.extend(result.get("items", []))
-        return self.channels__of_comments_array
+            self.channels_of_comments_array.extend(result.get("items", []))
+        return self.channels_of_comments_array
+
 #####################################################################
 
-    def youtube_search(self,key_word):
+    def youtube_search(self, key_word):
         page_token = None
         search_videos = []
         pprint(key_word)
@@ -102,9 +104,7 @@ class Downloader(object):
             self.videos_info.extend(video_response.get("items", []))
         return self.videos_info
 
-
-
-    def uniquer(self,seq, f=None):
+    def uniquer(self, seq, f=None):
         """ Keeps earliest occurring item of each f-defined equivalence class """
         if f is None:    # f's default is the identity function f(x) -> x
             def f(x): return x
