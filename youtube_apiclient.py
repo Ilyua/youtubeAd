@@ -29,6 +29,9 @@ class ApiClient(object):
         if 'items' not in results:
             print('Warning: comment threads can\'t be got')
 
+        if len(video_comment_threads) == 0:
+            return []
+
         for thread in video_comment_threads:
             yield thread
 

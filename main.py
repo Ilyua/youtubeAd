@@ -3,31 +3,29 @@ from youtube_apiclient import ApiClient
 from key_phrase_parser import parse_feq_dictionary
 from pymongo import MongoClient
 import sys
-# client = MongoClient()
-# db = client.my_db
-# channels_coll = db.channels
-# videos_coll = db.videos
-# comments_coll = db.comments
+client = MongoClient()
+db = client.my_db
+channels_coll = db.channels
+videos_coll = db.videos
+comments_coll = db.comments
 
-phrase = (list(parse_feq_dictionary('5000lemma.txt')))[int(sys.argv[2])]
-# AIzaSyAOIfpRS2SDQftT3uiXn9s3UyffshfFd3Q
+#db.dropDatabase()
+phrases_list = (list(parse_feq_dictionary('5000lemma.txt')))[int(sys.argv[2])]
 client = ApiClient(sys.argv[1])
 
-# channel_ids = set()
+channel_ids = set()
 
-# for i, phrase in enumerate(phrases_list):
-#     if i >= 1:
-#         break
+for i, phrase in enumerate(phrases_list):
+    if i >= 20:
+        break
 videos_ids = client.search_videos_by_key_phrase(phrase)
-id = list(videos_ids)[0]
-#     # for video_id in videos_ids:
-#     #     channel_ids.update({comment['snippet']['topLevelComment']['snippet']['authorChannelId']['value'] for comment in client.get_videos_main_comments(id)})
-
-pprint(client.get_video_info(id))
-#     # comments_coll.insert(client.get_videos_main_comments(id))
-#     # print(list(channel_ids))
-
-#     # channels_coll.insert(client.get_channel_info(list(channel_ids)[0]))#каналы из комментов
+for video_id in videos_ids:
+    channel_ids.update({comment['snippet']['topLevelComment']['snippet']['authorChannelId']['value'] for comment in client.get_videos_main_comments(video_id)})
+    for comment in client.get_videos_main_comments(video_id):
+        comments_coll.insert(comment)
+    videos_coll.insert(client.get_video_info(video_id))
+for channel_id in channel_ids:
+    channels_coll.insert(client.get_channel_info(channel_id))
 
 
 
