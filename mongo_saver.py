@@ -1,4 +1,4 @@
-import main
+
 
 from pymongo import MongoClient
 client = MongoClient()

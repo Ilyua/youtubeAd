@@ -2,31 +2,32 @@ from pprint import pprint
 from youtube_apiclient import ApiClient
 from key_phrase_parser import parse_feq_dictionary
 from pymongo import MongoClient
-client = MongoClient()
-db = client.my_db
-channels_coll = db.channels
-videos_coll = db.videos
-comments_coll = db.comments
+import sys
+# client = MongoClient()
+# db = client.my_db
+# channels_coll = db.channels
+# videos_coll = db.videos
+# comments_coll = db.comments
 
+phrase = (list(parse_feq_dictionary('5000lemma.txt')))[int(sys.argv[2])]
+# AIzaSyAOIfpRS2SDQftT3uiXn9s3UyffshfFd3Q
+client = ApiClient(sys.argv[1])
 
-phrases_list = parse_feq_dictionary('5000lemma.txt')
+# channel_ids = set()
 
-client = ApiClient()
-channel_ids = set()
+# for i, phrase in enumerate(phrases_list):
+#     if i >= 1:
+#         break
+videos_ids = client.search_videos_by_key_phrase(phrase)
+id = list(videos_ids)[0]
+#     # for video_id in videos_ids:
+#     #     channel_ids.update({comment['snippet']['topLevelComment']['snippet']['authorChannelId']['value'] for comment in client.get_videos_main_comments(id)})
 
-for i, phrase in enumerate(phrases_list):
-    if i >= 1:
-        break
-    videos_ids = client.search_videos_by_key_phrase(phrase)
-    id = list(videos_ids)[0]
-    #for video_id in videos_ids:
-    channel_ids.update({comment['snippet']['topLevelComment']['snippet']['authorChannelId']['value'] for comment in client.get_videos_main_comments(id)})
+pprint(client.get_video_info(id))
+#     # comments_coll.insert(client.get_videos_main_comments(id))
+#     # print(list(channel_ids))
 
-    videos_coll.insert(client.get_video_info(id))
-    comments_coll.insert(client.get_videos_main_comments(id))
-    #print(list(channel_ids))
-
-    channels_coll.insert(client.get_channel_info(list(channel_ids)[0]))#каналы из комментов
+#     # channels_coll.insert(client.get_channel_info(list(channel_ids)[0]))#каналы из комментов
 
 
 

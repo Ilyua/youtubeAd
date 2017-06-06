@@ -1,5 +1,6 @@
 import re
 
+
 def parse_feq_dictionary(file_name):
     REGEX = re.compile(
         '(?P<num>\d+) (?P<freq>[\d\.]+) (?P<phrase>[^ ]+) (?P<type>[a-zA-Z]+)')
