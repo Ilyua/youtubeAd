@@ -1,11 +1,15 @@
 #!/bin/bash
 file="./keys.txt"
-i=0
 keys_count=`cat keys.txt | wc -l`
-
-while read line
-do
-	#echo $i && echo $[i+keys_count] &
-	python3 main.py $line $i >>/tmp/out_$line.log && python3 main.py $line $[i+keys_count] >>/tmp/out_$line.log  
+i=0
+#while read line
+#do
+	
+	while [ $i -lt 10 ] 
+	do
+	python3 main.py "AIzaSyBdBmRWp_mYe1SW6HRpdWeN_-ju_cvkAgk" $i && echo $i  &   
 	i=$[i+1]	
-done < $file
+	done
+	wait
+	echo 'Finished'
+#done < $file
