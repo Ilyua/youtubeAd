@@ -9,23 +9,19 @@ channels_coll = db.channels
 videos_coll = db.videos
 comments_coll = db.comments
 
-#db.dropDatabase()
-phrases_list = (list(parse_feq_dictionary('5000lemma.txt')))[int(sys.argv[2])]
-client = ApiClient(sys.argv[1])
+def main(phrase):
+    client = ApiClient()
+    channel_ids = set()
+    videos_ids = client.search_videos_by_key_phrase(phrase)
+    for video_id in videos_ids:
+        channel_ids.update({comment['snippet']['topLevelComment']['snippet']['authorChannelId']['value'] for comment in client.get_videos_main_comments(video_id)})
+        for comment in client.get_videos_main_comments(video_id):
+            comments_coll.insert(comment)
+        videos_coll.insert(client.get_video_info(video_id))
+    for channel_id in channel_ids:
+        channels_coll.insert(client.get_channel_info(channel_id))
 
-channel_ids = set()
 
-for i, phrase in enumerate(phrases_list):
-    if i >= 20:
-        break
-videos_ids = client.search_videos_by_key_phrase(phrase)
-for video_id in videos_ids:
-    channel_ids.update({comment['snippet']['topLevelComment']['snippet']['authorChannelId']['value'] for comment in client.get_videos_main_comments(video_id)})
-    for comment in client.get_videos_main_comments(video_id):
-        comments_coll.insert(comment)
-    videos_coll.insert(client.get_video_info(video_id))
-for channel_id in channel_ids:
-    channels_coll.insert(client.get_channel_info(channel_id))
 
 
 
