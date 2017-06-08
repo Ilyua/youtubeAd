@@ -9,13 +9,13 @@ channels_coll = db.channels
 videos_coll = db.videos
 comments_coll = db.comments
 
-def main(phrase):
-    client = ApiClient()
+def main(phrase,key):
+    client = ApiClient(key)
     channel_ids = set()
     videos_ids = client.search_videos_by_key_phrase(phrase)
     for video_id in videos_ids:
-        channel_ids.update({comment['snippet']['topLevelComment']['snippet']['authorChannelId']['value'] for comment in client.get_videos_main_comments(video_id)})
         for comment in client.get_videos_main_comments(video_id):
+            channel_ids.update({comment['snippet']['topLevelComment']['snippet']['authorChannelId']['value']})
             comments_coll.insert(comment)
         videos_coll.insert(client.get_video_info(video_id))
     for channel_id in channel_ids:

@@ -2,14 +2,10 @@
 file="./keys.txt"
 keys_count=`cat keys.txt | wc -l`
 i=0
-#while read line
-#do
+while read line
+do
+	python3 worker.py $line $i &   
+	echo 'worker' $i 'are enabled'   	
+	i=$[i+1]
 	
-	#while [ $i -lt 10 ] 
-
-	python3 worker.py  $i && echo $i     
-	#i=$[i+1]	
-	#done
-	#wait
-	echo 'Finished'
-#done < $file
+done < $file

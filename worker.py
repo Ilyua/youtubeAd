@@ -13,9 +13,11 @@ channel.queue_declare(queue='task_queue', durable=True)
 print (' [*] Waiting for messages. To exit press CTRL+C')
 
 def callback(ch, method, properties, body):
-    print(" [x] Received ")
-    main(body)
-    print(" [x] Done")
+    print(" [{}] Received by worker # {}".format(sys.argv[2],sys.argv[2]))
+
+    main(body,sys.argv[1])
+    #print(body)
+    print(" [{}] Done by worker # {}".format(sys.argv[2],sys.argv[2]))
     ch.basic_ack(delivery_tag = method.delivery_tag)#?
 
 channel.basic_qos(prefetch_count=1)#Чтобы не отдавал воркеру все сразу, атолько после подтверждения
