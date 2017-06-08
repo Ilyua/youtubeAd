@@ -40,7 +40,7 @@ def search_videos_by_key_phrase(page_token, phrase,developer_key):
         q=phrase,
         type='video',
         part='id,snippet',
-        maxResults=50,  # max value allowed by youtube api is 50
+        maxResults=10,  # max value allowed by youtube api is 50
         pageToken=page_token,
         regionCode='RU'
     ).execute()
