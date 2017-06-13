@@ -1,0 +1,18 @@
+<!DOCTYPE html> 
+<html> 
+	<body>
+		<h1>Введите id канала и получите метрику по нему!</h1>
+		<form action="{% url 'addys_metrics:process_channel_id' %}" method="post">
+			{% csrf_token %}
+			<input type="text" name="channel_id"  />
+			<label for="channel_id">Channel_id</label><br>
+			<input type="submit"/>
+		</form> 
+	</body>
+</html>
+
+
+
+
+
+

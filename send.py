@@ -6,7 +6,7 @@ connection = pika.BlockingConnection(pika.ConnectionParameters(
 channel = connection.channel()
 channel.queue_declare(queue='task_queue', durable=True)
 for i,phrase in enumerate(list(parse_feq_dictionary('5000lemma.txt'))):
-    if i > 4:
+    if i > 1:
         break
     channel.basic_publish(exchange='',
                           routing_key='task_queue',

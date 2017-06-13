@@ -17,8 +17,9 @@ def callback(ch, method, properties, body):
 
     main(body,sys.argv[1])
     #print(body)
+    ch.basic_ack(delivery_tag = method.delivery_tag)
     print(" [{}] Done by worker # {}".format(sys.argv[2],sys.argv[2]))
-    ch.basic_ack(delivery_tag = method.delivery_tag)#?
+    #?
 
 channel.basic_qos(prefetch_count=1)#Чтобы не отдавал воркеру все сразу, атолько после подтверждения
 channel.basic_consume(callback,
