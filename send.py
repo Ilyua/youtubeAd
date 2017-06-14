@@ -4,9 +4,9 @@ from key_phrase_parser import parse_feq_dictionary
 connection = pika.BlockingConnection(pika.ConnectionParameters(
         host='localhost'))
 channel = connection.channel()
-channel.queue_declare(queue='task_queue', durable=True)
+channel.queue_declare(queue='task_queue')#, durable=True)
 for i,phrase in enumerate(list(parse_feq_dictionary('5000lemma.txt'))):
-    if i > 1:
+    if i > 5:
         break
     channel.basic_publish(exchange='',
                           routing_key='task_queue',

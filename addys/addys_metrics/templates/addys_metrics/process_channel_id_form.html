@@ -1,6 +1,8 @@
 <!DOCTYPE html> 
 <html> 
 	<body>
+	{{ subscr }}
+	<h1>Количество подписчиков такого канала:{{subscr_count }}</h1>
 		<h1>Введите id канала и получите метрику по нему!</h1>
 		<form action="{% url 'addys_metrics:process_channel_id' %}" method="post">
 			{% csrf_token %}

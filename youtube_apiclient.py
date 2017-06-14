@@ -3,7 +3,8 @@ import pprint
 
 
 class ApiClient(object):
-    SEARCH_MAX_PAGES = 1
+    PHRASE_SEARCH_MAX_PAGES = 1
+    SUBSCR_SEARCH_MAX_PAGES = 100
 
     def __init__(self, developer_key):
         self.developer_key = developer_key
@@ -29,7 +30,7 @@ class ApiClient(object):
         page_token = None
         search_videos = []
         videos_info = []
-        for _ in range(self.SEARCH_MAX_PAGES):
+        for _ in range(self.PHRASE_SEARCH_MAX_PAGES):
             search_response = tasks.search_videos_by_key_phrase.delay(page_token,phrase.decode(),self.developer_key).get()
             page_token = search_response.get('nextPageToken', None)
             for search_result in search_response.get('items', []):
@@ -43,6 +44,15 @@ class ApiClient(object):
         return video_response.get('items', [])
 
     def get_channel_subscriptions(self, channel_id):
-        subscribers_response = tasks.get_channel_subscriptions.delay(channel_id,self.developer_key).get()
-        return subscribers_response.get('items', [])
+        page_token =  None
+        for _ in range(self.SUBSCR_SEARCH_MAX_PAGES):
+            subscribers_response = tasks.get_channel_subscriptions.delay(page_token,channel_id,self.developer_key).get()
+            page_token = subscribers_response.get('nextPageToken', None)
+
+
+            for search_result in subscribers_response.get('items', []):
+                yield search_result
+            if page_token is None:
+                break
+
 

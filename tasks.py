@@ -40,7 +40,7 @@ def search_videos_by_key_phrase(page_token, phrase,developer_key):
         q=phrase,
         type='video',
         part='id,snippet',
-        maxResults=1,  # max value allowed by youtube api is 50
+        maxResults=10,  # max value allowed by youtube api is 50
         pageToken=page_token,
         regionCode='RU'
     ).execute()
@@ -56,10 +56,11 @@ def get_video_info(video_id,developer_key):
     return result
 
 @app.task(name='get_channel_subscriptions')
-def get_channel_subscriptions(channel_id,developer_key):
+def get_channel_subscriptions(page_token,channel_id,developer_key):
     try:
         result = make_youtube(developer_key).subscriptions().list(
             channelId=channel_id,
+            pageToken=page_token,
             part='snippet,subscriberSnippet'
         ).execute()
     except HttpError:

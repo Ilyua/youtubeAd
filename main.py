@@ -13,12 +13,12 @@ channels_coll = db.channels
 videos_coll = db.videos
 comments_coll = db.comments
 subscriptions_coll = db.subscriptions
-FORMAT = '%(asctime)s.%(msecs)d %(levelname)s in \'%(module)s\' at line %(lineno)d: %(message)s'
+FORMAT = '%(asctime)s.%(msecs)d %(levelname)s : %(message)s'
 logging.basicConfig(
     format=FORMAT,
     datefmt='%Y-%m-%d %H:%M:%S',
     level=logging.DEBUG,
-    filename='/var/log/addys/{date}.log'.format(
+    filename='./log/addys/{date}.log'.format(
         date = datetime.strftime(datetime.now(), "%Y-%m-%d")
     )
 )
@@ -31,15 +31,24 @@ def main(phrase,key):
     for i,video_id in enumerate(videos_ids):
         logging.debug('Got video_id:{}'.format(video_id))
         for comment in client.get_videos_main_comments(video_id):
-            authorChannelId = comment['snippet']['topLevelComment']['snippet']['authorChannelId']['value']
+            try:
+                authorChannelId = comment['snippet']['topLevelComment']['snippet']['authorChannelId']['value']
 
-            logging.debug('Got authorChannelId:{}'.format(authorChannelId))
+                logging.debug('Got authorChannelId:{}'.format(authorChannelId))
 
-            channel_ids.update({authorChannelId})
+                channel_ids.update({authorChannelId})
 
-            logging.debug('Start inserting comment by authorChannelId:{}'.format(authorChannelId))
-            comments_coll.insert(comment)
-            logging.debug('End inserting comment by authorChannelId:{}'.format(authorChannelId))
+                logging.debug('Start inserting comment by authorChannelId:{}'.format(authorChannelId))
+                comments_coll.insert(comment)
+                logging.debug('End inserting comment by authorChannelId:{}'.format(authorChannelId))
+            except Exception as e:
+                print('ERROR in main.py in channel_id block!!!')
+                logging.error('On video: {video_id} - {problem}'.format(
+                    video_id=video_id,
+                    problem=(str(e))))
+
+
+
 
         logging.debug('Start inserting video by id:{}'.format(video_id))
         videos_coll.insert(client.get_video_info(video_id))
@@ -50,13 +59,13 @@ def main(phrase,key):
         channels_coll.insert(client.get_channel_info(channel_id))
         logging.debug('End inserting channel by id:{}'.format(channel_id))
 
-        subscriptions = client.get_channel_subscriptions(channel_id)
+        for subscription in  client.get_channel_subscriptions(channel_id):
 
-        if len(subscriptions) != 0:
-            subscriptions_coll.insert(subscriptions)
-            print('Success')
-        else:
-            print('No suscriptions!')
+            if len(subscription) != 0:
+                subscriptions_coll.insert(subscription)
+                logging.debug('Sucesfull inserted subscriptions')
+            else:
+                logging.debug('No subscritions!')
 
 
 
